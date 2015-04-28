@@ -39,7 +39,6 @@ public class FixedExecutor implements Runnable {
                     }
                 }
             }
-
         }
     }
 
@@ -48,6 +47,5 @@ public class FixedExecutor implements Runnable {
         synchronized (this){
             this.notify();
         }
-
     }
 }

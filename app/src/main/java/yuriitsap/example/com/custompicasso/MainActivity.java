@@ -21,7 +21,7 @@ public class MainActivity extends ActionBarActivity {
         findViewById(R.id.load).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PicassoUtil.with(MainActivity.this).load(R.drawable.placeholder).placeholder(R.drawable.placeholder).into(
+                PicassoUtil.with(MainActivity.this).load(R.drawable.johny_cash).placeholder(R.drawable.placeholder).into(
                         (android.widget.ImageView) findViewById(R.id.image_view));
             }
         });

@@ -17,12 +17,13 @@ public class PicassoUtil {
     static final Handler HANDLER = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
+            Request request = (Request) msg.obj;
             switch (msg.what) {
                 case INTO_PLACEHOLDER:
-                    Request request = (Request) msg.obj;
                     request.getImageView().setImageDrawable(request.getPlaceholder());
                     break;
                 case INTO_BITMAP:
+                    request.getImageView().setImageBitmap(request.getObtainedBitmap());
                     break;
             }
         }
@@ -51,7 +52,6 @@ public class PicassoUtil {
             }
         }
         return instance;
-
     }
 
     public Request load(int resId) {
@@ -59,11 +59,11 @@ public class PicassoUtil {
     }
 
     public Request load(String filePath) {
-        return null;
+        return new Request(Uri.parse(filePath), 0, instance);
     }
 
     public Request load(Uri uri) {
-        return null;
+        return new Request(uri, 0, instance);
     }
 
     private static class Builder {
@@ -85,8 +85,5 @@ public class PicassoUtil {
             }
             return new PicassoUtil(mContext, mExecutorService, mBitmapCache);
         }
-
     }
-
-
 }

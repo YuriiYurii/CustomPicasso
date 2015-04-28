@@ -12,7 +12,6 @@ public class BitmapCache {
     private int mAvailableCachedMemory;
     private LruCache<String, Bitmap> mMemoryCache;
 
-
     public static synchronized BitmapCache getInstance() {
         if (instance == null) {
             instance = new BitmapCache();
@@ -27,7 +26,6 @@ public class BitmapCache {
             protected int sizeOf(String key, Bitmap bitmap) {
                 return bitmap.getByteCount() / 1024;
             }
-
         };
     }
 
