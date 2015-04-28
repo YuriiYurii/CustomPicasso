@@ -4,6 +4,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import java.io.InputStream;
+
 /**
  * Created by ytsap on 13.10.2014.
  */
@@ -33,5 +35,15 @@ public class BitmapSizeDecoder {
         options.inSampleSize = calculateInSampleSize(options, reqHeight, reqWidth);
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeResource(resource, resId, options);
+    }
+
+    public static Bitmap decodeSampleBitmapStream(InputStream stream, int reqWidth,
+            int reqHeight) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(stream, null, options);
+        options.inSampleSize = calculateInSampleSize(options, reqHeight, reqWidth);
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeStream(stream, null, options);
     }
 }

@@ -1,31 +1,44 @@
 package yuriitsap.example.com.custompicasso.utils;
 
 import android.graphics.Bitmap;
-import android.os.Message;
+import android.net.Uri;
+import android.util.Log;
 
-import java.lang.ref.WeakReference;
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * Created by yuriitsap on 28.04.15.
  */
 public class BitmapWorkerTask implements Runnable {
 
-    private WeakReference<Request> mRequest;
+    private Request mRequest;
 
     public BitmapWorkerTask(Request request) {
-        mRequest = new WeakReference<>(request);
+        mRequest = request;
     }
 
     @Override
     public void run() {
-        Request request = mRequest.get();
-        request.setObtainedBitmap(BitmapSizeDecoder
-                .decodeSampleBitmapFromResource(request.mPicassoUtil.mContext.getResources(),
-                        request.mResId, request.DEFAULT_WIDTH, request.DEFAULT_HEIGHT));
-        Message message = new Message();
-        message.what = PicassoUtil.INTO_BITMAP;
-        message.obj = request;
-        request.mPicassoUtil.HANDLER.sendMessage(message);
-        mRequest.clear();
+        Log.e("TAG", "BitmapWorkerTask Thread = " + Thread.currentThread().getName());
+        if (mRequest.getObtainedBitmap() == null) {
+            mRequest.setObtainedBitmap(getBitmapFromURL(mRequest.getRequestedUri()));
+            mRequest.mPicassoUtil.getHandler().post(this);
+            return;
+        }
+        mRequest.getTarget().setImageBitmap(mRequest.getObtainedBitmap());
+    }
+
+    public static Bitmap getBitmapFromURL(Uri uri) {
+        try {
+
+            URL url = new URL(uri.toString());
+            Bitmap myBitmap = BitmapSizeDecoder
+                    .decodeSampleBitmapStream(url.openStream(), 100, 100);
+            return myBitmap;
+        } catch (IOException e) {
+            // Log exception
+            return null;
+        }
     }
 }

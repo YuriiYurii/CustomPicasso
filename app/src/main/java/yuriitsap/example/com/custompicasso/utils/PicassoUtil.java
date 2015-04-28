@@ -3,8 +3,8 @@ package yuriitsap.example.com.custompicasso.utils;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,27 +14,11 @@ import java.util.concurrent.Executors;
  */
 public class PicassoUtil {
 
-    static final Handler HANDLER = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(Message msg) {
-            Request request = (Request) msg.obj;
-            switch (msg.what) {
-                case INTO_PLACEHOLDER:
-                    request.getImageView().setImageDrawable(request.getPlaceholder());
-                    break;
-                case INTO_BITMAP:
-                    request.getImageView().setImageBitmap(request.getObtainedBitmap());
-                    break;
-            }
-        }
-    };
-    static final int INTO_PLACEHOLDER = 1;
-    static final int INTO_BITMAP = 2;
-
     private static volatile PicassoUtil instance;
-    Context mContext;
-    ExecutorService mExecutorService;
-    BitmapCache mBitmapCache;
+    private Handler mHandler = new Handler();
+    private Context mContext;
+    private ExecutorService mExecutorService;
+    private BitmapCache mBitmapCache;
 
     public PicassoUtil(Context context, ExecutorService executorService,
             BitmapCache bitmapCache) {
@@ -85,5 +69,22 @@ public class PicassoUtil {
             }
             return new PicassoUtil(mContext, mExecutorService, mBitmapCache);
         }
+    }
+
+
+    public Handler getHandler() {
+        return mHandler;
+    }
+
+    public Context getContext() {
+        return mContext;
+    }
+
+    public ExecutorService getExecutorService() {
+        return mExecutorService;
+    }
+
+    public BitmapCache getBitmapCache() {
+        return mBitmapCache;
     }
 }

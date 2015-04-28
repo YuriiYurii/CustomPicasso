@@ -3,17 +3,12 @@ package yuriitsap.example.com.custompicasso.utils;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Message;
-import android.util.Log;
 import android.widget.ImageView;
 
 /**
  * Created by yuriitsap on 27.04.15.
  */
 public class Request {
-
-    static final int DEFAULT_HEIGHT = 100;
-    static final int DEFAULT_WIDTH = 100;
 
     private Uri mUri;
     private Drawable mPlaceholder;
@@ -30,41 +25,46 @@ public class Request {
     }
 
     public Request placeholder(int placeholderId) {
-        mPlaceholder = mPicassoUtil.mContext.getResources().getDrawable(placeholderId);
+        mPlaceholder = mPicassoUtil.getContext().getResources().getDrawable(placeholderId);
         return this;
     }
 
     public void into(ImageView imageView) {
         mImageView = imageView;
-        Message message = new Message();
-        message.obj = this;
         if (mPlaceholder != null) {
-            message.what = PicassoUtil.INTO_PLACEHOLDER;
-            mPicassoUtil.HANDLER.sendMessage(message);
+            imageView.setImageDrawable(mPlaceholder);
         }
-        if ((mObtainedBitmap=mPicassoUtil.mBitmapCache.getBitmapFromMemoryCache(String.valueOf(mResId))) != null) {
-            Log.e("TAG", "From Cache");
-            message.what = PicassoUtil.INTO_BITMAP;
-            mPicassoUtil.HANDLER.sendMessage(message);
+        if (mResId != 0) {
+            imageView
+                    .setImageDrawable(mPicassoUtil.getContext().getResources().getDrawable(mResId));
+        }
+        if (isInCache()) {
+            mPicassoUtil.getHandler().post(new Response(mImageView,
+                    mPicassoUtil.getBitmapCache().getBitmapFromMemoryCache(mUri.toString())));
         } else {
-            mPicassoUtil.mExecutorService.execute(new BitmapWorkerTask(this));
+            mPicassoUtil.getExecutorService().execute(new BitmapWorkerTask(this));
         }
+
+
     }
 
-    ImageView getImageView() {
+    private boolean isInCache() {
+        return mPicassoUtil.getBitmapCache().containsKey(mUri.toString());
+    }
+
+    public Uri getRequestedUri() {
+        return mUri;
+    }
+
+    public ImageView getTarget() {
         return mImageView;
     }
 
-    Drawable getPlaceholder() {
-        return mPlaceholder;
+    public void setObtainedBitmap(Bitmap bitmap) {
+        mObtainedBitmap = bitmap;
     }
 
-    Bitmap getObtainedBitmap() {
+    public Bitmap getObtainedBitmap() {
         return mObtainedBitmap;
-    }
-
-    void setObtainedBitmap(Bitmap obtainedBitmap) {
-        mPicassoUtil.mBitmapCache.addBitmapToMemoryCache(String.valueOf(mResId), obtainedBitmap);
-        mObtainedBitmap = obtainedBitmap;
     }
 }

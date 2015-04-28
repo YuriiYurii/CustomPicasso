@@ -50,4 +50,8 @@ public class BitmapCache {
     public int memoryAvailable() {
         return mAvailableCachedMemory - mMemoryCache.size();
     }
+
+    public boolean containsKey(String key) {
+        return mMemoryCache.get(key) != null;
+    }
 }
