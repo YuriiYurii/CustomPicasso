@@ -71,7 +71,6 @@ public class PicassoUtil {
         }
     }
 
-
     public Handler getHandler() {
         return mHandler;
     }

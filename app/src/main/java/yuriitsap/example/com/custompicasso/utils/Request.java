@@ -14,8 +14,8 @@ public class Request {
     private Drawable mPlaceholder;
     private ImageView mImageView;
     private Bitmap mObtainedBitmap;
-    int mResId;
-    PicassoUtil mPicassoUtil;
+    private int mResId;
+    private PicassoUtil mPicassoUtil;
 
     public Request(Uri uri, int resId,
             PicassoUtil picassoUtil) {
@@ -31,25 +31,32 @@ public class Request {
 
     public void into(ImageView imageView) {
         mImageView = imageView;
-        if (mPlaceholder != null) {
-            imageView.setImageDrawable(mPlaceholder);
-        }
-        if (mResId != 0) {
-            imageView
-                    .setImageDrawable(mPicassoUtil.getContext().getResources().getDrawable(mResId));
-        }
-        if (isInCache()) {
-            mPicassoUtil.getHandler().post(new Response(mImageView,
-                    mPicassoUtil.getBitmapCache().getBitmapFromMemoryCache(mUri.toString())));
+        setupPlaceholder();
+        if (isInCache() && !fromResource()) {
+            mImageView.setImageBitmap(
+                    mPicassoUtil.getBitmapCache().getBitmapFromMemoryCache(mUri.toString()));
         } else {
             mPicassoUtil.getExecutorService().execute(new BitmapWorkerTask(this));
         }
+    }
 
-
+    private boolean fromResource() {
+        if (mResId != 0) {
+            mImageView
+                    .setImageDrawable(mPicassoUtil.getContext().getResources().getDrawable(mResId));
+            return true;
+        }
+        return false;
     }
 
     private boolean isInCache() {
         return mPicassoUtil.getBitmapCache().containsKey(mUri.toString());
+    }
+
+    private void setupPlaceholder() {
+        if (mPlaceholder != null) {
+            mImageView.setImageDrawable(mPlaceholder);
+        }
     }
 
     public Uri getRequestedUri() {
@@ -61,10 +68,15 @@ public class Request {
     }
 
     public void setObtainedBitmap(Bitmap bitmap) {
+        mPicassoUtil.getBitmapCache().addBitmapToMemoryCache(mUri.toString(), bitmap);
         mObtainedBitmap = bitmap;
     }
 
     public Bitmap getObtainedBitmap() {
         return mObtainedBitmap;
+    }
+
+    public PicassoUtil getPicassoUtil() {
+        return mPicassoUtil;
     }
 }
