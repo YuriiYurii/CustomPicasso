@@ -10,7 +10,6 @@ import yuriitsap.example.com.custompicasso.utils.PicassoUtil;
 
 public class MainActivity extends ActionBarActivity {
 
-    private FixedExecutor mFixedExecutor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

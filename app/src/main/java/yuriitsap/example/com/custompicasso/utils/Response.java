@@ -20,6 +20,5 @@ public class Response implements Runnable {
     @Override
     public void run() {
         mTarget.setImageBitmap(mBitmap);
-        Log.e("TAG", "Response Thread = " + Thread.currentThread().getName());
     }
 }
